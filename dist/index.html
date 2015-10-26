@@ -33,7 +33,7 @@
       if (url && url.length > 1) {
         url = decodeURIComponent(url[1]);
       } else {
-        url = "http://petstore.swagger.io/v2/swagger.json";
+        url = "http://localhost:8080/v2/api-docs";
       }
 
       // Pre load translate...
@@ -47,11 +47,11 @@
         onComplete: function(swaggerApi, swaggerUi){
           if(typeof initOAuth == "function") {
             initOAuth({
-              clientId: "your-client-id",
-              clientSecret: "your-client-secret",
-              realm: "your-realms",
-              appName: "your-app-name", 
-              scopeSeparator: ","
+              clientId: "jhipsterapp",
+              clientSecret: "mySecretOAuthSecret",
+              realm: "oauth",
+              appName: "swagger-jhipster", 
+              scopeSeparator: " "
             });
           }
 
