@@ -33,7 +33,7 @@
       if (url && url.length > 1) {
         url = decodeURIComponent(url[1]);
       } else {
-        url = "http://petstore.swagger.io/v2/swagger.json";
+        url = "http://localhost:8080/docs/swagger.json";
       }
 
       // Pre load translate...
@@ -63,14 +63,16 @@
             hljs.highlightBlock(e)
           });
 
-          addApiKeyAuthorization();
+          //addApiKeyAuthorization();
+          addAuthorization();
         },
         onFailure: function(data) {
           log("Unable to Load SwaggerUI");
         },
         docExpansion: "none",
         apisSorter: "alpha",
-        showRequestHeaders: false
+        showRequestHeaders: false,
+        validatorUrl: null
       });
 
       function addApiKeyAuthorization(){
@@ -82,7 +84,22 @@
         }
       }
 
-      $('#input_apiKey').change(addApiKeyAuthorization);
+      function addAuthorization() {
+        var username = encodeURIComponent($('#input_username').val());
+        var password = encodeURIComponent($('#input_password').val());
+        if (username && username.trim() != "" && password && password.trim() != "") {
+          var basicAuth = new SwaggerClient.PasswordAuthorization(username, password);
+            window.swaggerUi.api.clientAuthorizations.add("basicAuth", basicAuth);
+            log("authorization added: username = " + username + ", password = " + password);
+          }
+        }
+
+      $('#input_username').change(addAuthorization);
+      $('#input_password').change(addAuthorization);
+
+      $('#input_username').val("admin");
+      $('#input_password').val("admin");
+
 
       // if you have an apiKey you would like to pre-populate on the page for demonstration purposes...
       /*
@@ -107,7 +124,8 @@
     <a id="logo" href="http://swagger.io">swagger</a>
     <form id='api_selector'>
       <div class='input'><input placeholder="http://example.com/api" id="input_baseUrl" name="baseUrl" type="text"/></div>
-      <div class='input'><input placeholder="api_key" id="input_apiKey" name="apiKey" type="text"/></div>
+      <div class='input'><input placeholder="username" id="input_username" name="username" type="text" size="10"/></div>
+      <div class='input'><input placeholder="password" id="input_password" name="password" type="password" size="10"/></div>
       <div class='input'><a id="explore" href="#" data-sw-translate>Explore</a></div>
     </form>
   </div>
