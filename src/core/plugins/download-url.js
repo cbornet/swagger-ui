@@ -21,7 +21,7 @@ export default function downloadUrlPlugin (toolbox) {
         responseInterceptor: config.responseInterceptor || (a => a),
         credentials: "same-origin",
         headers: {
-          "Accept": "application/json,*/*"
+          "Accept": "application/ohm+json,*/*"
         }
       }).then(next,next)
 
@@ -34,7 +34,12 @@ export default function downloadUrlPlugin (toolbox) {
           return
         }
         specActions.updateLoadingStatus("success")
-        specActions.updateSpec(res.text)
+        var body = JSON.parse(res.text)
+        if (!body.controls.info) {
+          body.controls.info = {}
+        }
+        body.controls.info.description = '```json\n' + JSON.stringify(body.content, null, 4) + '\n```'
+        specActions.updateSpec(JSON.stringify(body.controls))
         if(specSelectors.url() !== url) {
           specActions.updateUrl(url)
         }

@@ -446,14 +446,22 @@ export const executeRequest = (req) =>
     return fn.execute(req)
     .then( res => {
       res.duration = Date.now() - startTime
-      specActions.setResponse(req.pathName, req.method, res)
+      var body = JSON.parse(res.text)
+      var controls = body.controls
+
+      if (!body.controls.info) {
+        body.controls.info = {}
+      }
+      body.controls.info.description = '```json\n' + JSON.stringify(body.content, null, 4) + '\n```'
+      specActions.updateSpec(JSON.stringify(controls))
+      //specActions.setResponse(req.pathName, req.method, res)
     } )
     .catch(
       err => {
         console.error(err)
-        specActions.setResponse(req.pathName, req.method, {
-          error: true, err: serializeError(err)
-        })
+        //specActions.setResponse(req.pathName, req.method, {
+        //  error: true, err: serializeError(err)
+        //})
       }
     )
   }
