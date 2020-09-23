@@ -34,12 +34,19 @@ export default function downloadUrlPlugin (toolbox) {
           return
         }
         specActions.updateLoadingStatus("success")
-        var body = JSON.parse(res.text)
-        if (!body.controls.info) {
-          body.controls.info = {}
+        var controls = res.body.controls
+        var content = res.body.content
+        
+        if (!controls) {
+          controls = {}
         }
-        body.controls.info.description = '```json\n' + JSON.stringify(body.content, null, 4) + '\n```'
-        specActions.updateSpec(JSON.stringify(body.controls))
+        if (!controls.info) {
+          controls.info = {}
+        }
+        if (content) {
+          controls.info.description = '```json\n' + JSON.stringify(content, null, 4) + '\n```'
+        }
+        specActions.updateSpec(JSON.stringify(controls))
         if(specSelectors.url() !== url) {
           specActions.updateUrl(url)
         }

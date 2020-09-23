@@ -446,19 +446,30 @@ export const executeRequest = (req) =>
     return fn.execute(req)
     .then( res => {
       res.duration = Date.now() - startTime
-      var body = JSON.parse(res.text)
-      var controls = body.controls
 
-      if (!body.controls.info) {
-        body.controls.info = {}
+      var controls = res.body.controls
+      var content = res.body.content
+      
+      if (!controls) {
+        controls = {}
       }
-      body.controls.info.description = '```json\n' + JSON.stringify(body.content, null, 4) + '\n```'
+      if (!controls.info) {
+        controls.info = {}
+      }
+      if (content) {
+        controls.info.description = '```json\n' + JSON.stringify(content, null, 4) + '\n```'
+      }
+
       specActions.updateSpec(JSON.stringify(controls))
-      //specActions.setResponse(req.pathName, req.method, res)
+      // To remove the spinner
+      specActions.setResponse(req.pathName, req.method, res)
+      specActions.clearResponse(req.pathName, req.method)
+      
     } )
     .catch(
       err => {
         console.error(err)
+        window.alert(err.response.text)
         //specActions.setResponse(req.pathName, req.method, {
         //  error: true, err: serializeError(err)
         //})
