@@ -470,9 +470,11 @@ export const executeRequest = (req) =>
       err => {
         console.error(err)
         window.alert(err.response.text)
-        //specActions.setResponse(req.pathName, req.method, {
-        //  error: true, err: serializeError(err)
-        //})
+        // To remove the spinner
+        specActions.setResponse(req.pathName, req.method, {
+          error: true, err: serializeError(err)
+        })
+        specActions.clearResponse(req.pathName, req.method)
       }
     )
   }
