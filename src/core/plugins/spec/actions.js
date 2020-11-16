@@ -425,6 +425,14 @@ export const executeRequest = (req) =>
     }
 
     let parsedRequest = Object.assign({}, req)
+
+    if (pathName !== pathName.split("#")[0]) {
+      Object.defineProperty(parsedRequest.spec.paths, pathName.split("#")[0],
+          Object.getOwnPropertyDescriptor(parsedRequest.spec.paths, pathName))
+      delete parsedRequest.spec.paths[pathName]
+      parsedRequest.spec.paths[pathName.split("#")[0]][method].operationId = req.operationId
+    }
+
     parsedRequest = fn.buildRequest(parsedRequest)
 
     specActions.setRequest(req.pathName, req.method, parsedRequest)
@@ -469,12 +477,12 @@ export const executeRequest = (req) =>
     .catch(
       err => {
         console.error(err)
-        window.alert(err.response.text)
         // To remove the spinner
         specActions.setResponse(req.pathName, req.method, {
-          error: true, err: serializeError(err)
+          error: true, err: ""
         })
         specActions.clearResponse(req.pathName, req.method)
+        window.alert(err.response.text)
       }
     )
   }
